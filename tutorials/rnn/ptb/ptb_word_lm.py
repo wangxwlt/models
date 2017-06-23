@@ -90,7 +90,7 @@ class PTBInput(object):
   def __init__(self, config, data, name=None):
     self.batch_size = batch_size = config.batch_size
     self.num_steps = num_steps = config.num_steps
-    self.epoch_size = ((len(data) // batch_size) - 1) // num_steps
+    self.epoch_size = ((len(data) // batch_size) - 1) // num_steps      #?
     self.input_data, self.targets = reader.ptb_producer(
         data, batch_size, num_steps, name=name)
 
@@ -130,15 +130,15 @@ class PTBModel(object):
     cell = tf.contrib.rnn.MultiRNNCell(
         [attn_cell() for _ in range(config.num_layers)], state_is_tuple=True)
 
-    self._initial_state = cell.zero_state(batch_size, data_type())
+    self._initial_state = cell.zero_state(batch_size, data_type())  #which params have been initialized?
 
     with tf.device("/cpu:0"):
       embedding = tf.get_variable(
           "embedding", [vocab_size, size], dtype=data_type())
-      inputs = tf.nn.embedding_lookup(embedding, input_.input_data)
+      inputs = tf.nn.embedding_lookup(embedding, input_.input_data)     #inputs with size of batch*step*size?
 
     if is_training and config.keep_prob < 1:
-      inputs = tf.nn.dropout(inputs, config.keep_prob)
+      inputs = tf.nn.dropout(inputs, config.keep_prob)      #dropout?
 
     # Simplified version of models/tutorials/rnn/rnn.py's rnn().
     # This builds an unrolled LSTM for tutorial purposes only.
